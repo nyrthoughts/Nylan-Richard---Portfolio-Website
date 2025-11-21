@@ -113,7 +113,7 @@ export const Interface: React.FC<InterfaceProps> = ({ isHoveringNode }) => {
       {/* Top Left - Header */}
       <header className="flex justify-start items-start pointer-events-auto">
         <a 
-          href="https://drive.google.com/file/d/1v93ra49JQRfor26GuqNTLD8ESK76lKa_/view?usp=sharing"
+          href="https://www.notion.so/Say-Hi-2b21767100918062816ec5167ce72368?source=copy_link"
           target="_blank"
           rel="noopener noreferrer"
           className="text-3xl md:text-5xl font-semibold tracking-tight text-white cursor-pointer transition-all duration-300 hover:scale-105"
