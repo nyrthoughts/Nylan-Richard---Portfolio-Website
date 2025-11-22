@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Linkedin, Mail, Calendar } from 'lucide-react';
 
@@ -100,7 +99,7 @@ export const Interface: React.FC<InterfaceProps> = ({ isHoveringNode }) => {
             {PHRASES[phraseIndex].split(' ').map((word, i) => (
               <span 
                 key={i} 
-                className="word-animate text-neutral-400 text-sm md:text-base font-medium tracking-[0.2em] uppercase"
+                className="word-animate text-white text-sm md:text-base font-medium tracking-[0.2em] uppercase"
                 style={{ animationDelay: `${i * 0.12}s` }}
               >
                 {word}
