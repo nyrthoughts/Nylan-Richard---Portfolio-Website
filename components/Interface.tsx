@@ -132,7 +132,7 @@ export const Interface: React.FC<InterfaceProps> = ({ isHoveringNode }) => {
               Paris - San Francisco
             </h2>
             <p className="text-sm md:text-base text-white/90 font-medium leading-relaxed whitespace-normal md:whitespace-nowrap">
-              AI Product builder. 0 to 1 operator turning complex ideas into systems. Philosopher
+              AI Product builder. 0 to 1 operator turning complex ideas into systems.
             </p>
           </div>
 
