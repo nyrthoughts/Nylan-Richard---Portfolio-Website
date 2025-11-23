@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Linkedin, Mail, Calendar, X, ArrowRight, ArrowLeft } from 'lucide-react';
 
 interface InterfaceProps {
@@ -174,6 +174,146 @@ export const Interface: React.FC<InterfaceProps> = ({ isHoveringNode }) => {
   // Button State
   const [isHoveringButton, setIsHoveringButton] = useState(false);
   const [buttonText, setButtonText] = useState("LET'S WORK TOGETHER");
+
+  // --- AUDIO ENGINE ---
+  // Plays a "Beatles-esque" acoustic guitar sequence on first user interaction
+  const hasPlayedAudioRef = useRef(false);
+
+  useEffect(() => {
+    const playIntroSequence = () => {
+      if (hasPlayedAudioRef.current) return;
+      hasPlayedAudioRef.current = true;
+
+      // Create Context
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      const ctx = new AudioContext();
+
+      // Master Gain for global fade out
+      const masterGain = ctx.createGain();
+      masterGain.gain.value = 0.3; // Base volume (slightly louder for acoustic feel)
+      masterGain.connect(ctx.destination);
+
+      // Acoustic Guitar Pluck Synthesizer
+      // Bright Sawtooth + Faster Decay to simulate steel strings
+      const playNote = (freq: number, startTime: number, duration: number) => {
+        const t = startTime;
+        
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+
+        osc.type = 'sawtooth'; // Sawtooth has harmonics like a string
+        osc.frequency.value = freq;
+
+        // Filter Envelope: Pluck sound (starts bright, mellows out)
+        filter.type = 'lowpass';
+        filter.Q.value = 1; // Slight resonance for body
+        filter.frequency.setValueAtTime(3000, t);
+        filter.frequency.exponentialRampToValueAtTime(300, t + 0.1); // Quick filter decay
+
+        // Amplitude Envelope: String pluck
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(1, t + 0.015); // Fast attack
+        gain.gain.exponentialRampToValueAtTime(0.01, t + duration); // Natural decay
+
+        // Connect
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(masterGain);
+
+        osc.start(t);
+        osc.stop(t + duration);
+      };
+
+      const now = ctx.currentTime;
+      
+      // Sequence: "Blackbird" inspired chromatic walk-up in G Major
+      // Rhythmic, folk picking pattern
+      // Approx 110 BPM -> 0.27s per 8th note
+      const b = 0.27;
+
+      const sequence = [
+        // Measure 1: G -> Am
+        // G (Low) + B (High)
+        { f: 98.00, t: 0, d: 2.0 },   // G2
+        { f: 246.94, t: 0, d: 2.0 },  // B3
+        { f: 196.00, t: b, d: 1.0 },  // G3 (drone)
+        
+        // A (Low) + C (High)
+        { f: 110.00, t: 2*b, d: 2.0 }, // A2
+        { f: 261.63, t: 2*b, d: 2.0 }, // C4
+        { f: 196.00, t: 3*b, d: 1.0 }, // G3 (drone)
+
+        // Measure 2: Bm -> G/B
+        // B (Low) + D (High)
+        { f: 123.47, t: 4*b, d: 2.0 }, // B2
+        { f: 293.66, t: 4*b, d: 2.0 }, // D4
+        { f: 246.94, t: 5*b, d: 1.0 }, // B3 (drone)
+        
+        // Measure 3: C -> C#dim (The walk up vibe)
+        // C (Low) + E (High)
+        { f: 130.81, t: 6*b, d: 2.0 }, // C3
+        { f: 329.63, t: 6*b, d: 2.0 }, // E4
+        { f: 196.00, t: 7*b, d: 1.0 }, // G3 (drone)
+
+        // C# (Low) + E (High) - diminished tension
+        { f: 138.59, t: 8*b, d: 2.0 }, // C#3
+        { f: 329.63, t: 8*b, d: 2.0 }, // E4 (sustained/repicked)
+        { f: 233.08, t: 9*b, d: 1.0 }, // Bb3 (diminished flavor)
+
+        // Measure 4: D -> Resolution G
+        // D (Low) + F# (High)
+        { f: 146.83, t: 10*b, d: 2.0 }, // D3
+        { f: 369.99, t: 10*b, d: 2.0 }, // F#4
+        { f: 293.66, t: 11*b, d: 1.0 }, // D4 (drone)
+
+        // Measure 5: High G (Harmonic climax)
+        { f: 196.00, t: 12*b, d: 3.0 }, // G3
+        { f: 392.00, t: 12*b, d: 3.0 }, // G4
+        { f: 246.94, t: 13*b, d: 2.0 }, // B3 (open)
+        { f: 293.66, t: 14*b, d: 2.0 }, // D4 (open)
+        
+        // End Strum
+        { f: 98.00, t: 15*b, d: 4.0 },  // G2
+        { f: 196.00, t: 15.05*b, d: 4.0 }, // G3
+        { f: 246.94, t: 15.1*b, d: 4.0 }, // B3
+        { f: 293.66, t: 15.15*b, d: 4.0 }, // D4
+        { f: 392.00, t: 15.2*b, d: 4.0 }, // G4
+      ];
+
+      sequence.forEach(note => {
+        playNote(note.f, now + note.t, note.d);
+      });
+
+      // Global Fade out at 13s -> 15s
+      masterGain.gain.setValueAtTime(0.3, now + 12);
+      masterGain.gain.linearRampToValueAtTime(0, now + 15);
+
+      // Cleanup
+      setTimeout(() => {
+        if (ctx.state !== 'closed') ctx.close();
+      }, 15500);
+    };
+
+    const handleInteraction = () => {
+      playIntroSequence();
+      // Remove listener immediately after triggering
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('keydown', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+    };
+
+    // Listen for any user interaction to start the audio context
+    window.addEventListener('click', handleInteraction);
+    window.addEventListener('keydown', handleInteraction);
+    window.addEventListener('touchstart', handleInteraction);
+
+    return () => {
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('keydown', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+    };
+  }, []);
 
   // Reset selection when closing panel
   useEffect(() => {
@@ -480,7 +620,7 @@ export const Interface: React.FC<InterfaceProps> = ({ isHoveringNode }) => {
           </nav>
         </div>
 
-        {/* Bottom Right: Icon Links */}
+        {/* Bottom Right: Icon Links (Audio Toggle removed) */}
         <div className="flex flex-col gap-6 items-center pb-1">
           {iconLinks.map((link) => (
             <a
