@@ -217,10 +217,10 @@ export const Interface: React.FC<InterfaceProps> = ({ isHoveringNode }) => {
 
   // Left side text links
   const textLinks = [
-    { label: 'Resume', href: 'https://www.notion.so/Resume-2b2176710091805a9e25e69a28785c50?source=copy_link' },
-    { label: 'Publications', href: 'https://www.notion.so/Publications-2b217671009180ae9e81d2001d883667?source=copy_link' },
-    { label: 'Academics', href: 'https://www.notion.so/Academics-2b217671009180f38131cee30fcfb8aa?source=copy_link' },
-    { label: 'Interests', href: 'https://www.notion.so/Interests-2b217671009180fdbe6beff8add3ac5f?source=copy_link' },
+    { label: 'Resume', href: 'https://www.notion.so/Resume-2b2176710091805a9e25e69a28785c50' },
+    { label: 'Publications', href: 'https://marbled-marmot-117.notion.site/Publications-2b217671009180ae9e81d2001d883667' },
+    { label: 'Academics', href: 'https://marbled-marmot-117.notion.site/Academics-2b217671009180f38131cee30fcfb8aa' },
+    { label: 'Interests', href: 'https://marbled-marmot-117.notion.site/Interests-2b217671009180fdbe6beff8add3ac5f' },
   ];
 
   // Right side icon links
